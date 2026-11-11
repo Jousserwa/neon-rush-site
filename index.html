@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEON RUSH — How Far Can You Go?</title>
+<meta name="description" content="Neon Rush is a neon cyberpunk runner with real bosses, a gun that grows with the danger, air support, a combat wingman and portals to other realms. Free on Android.">
+<meta name="theme-color" content="#03030f">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pink:#ff2d78; --cyan:#00f5ff; --purple:#bf00ff; --gold:#ffc21a; --green:#69f0ae;
+  --navy:#03030f; --card:#0a0a1f; --line:rgba(0,245,255,.18);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--navy);color:#fff;font-family:'Rajdhani',sans-serif;font-size:18px;line-height:1.5;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(0,245,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,.07) 1px,transparent 1px);background-size:44px 44px;
+  mask-image:radial-gradient(ellipse at 50% 30%,#000 20%,transparent 75%);-webkit-mask-image:radial-gradient(ellipse at 50% 30%,#000 20%,transparent 75%)}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:200;
+  background:repeating-linear-gradient(0deg,transparent 0 2px,rgba(0,0,0,.06) 2px 4px)}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:0 22px}
+h1,h2,h3,.orb{font-family:'Orbitron',monospace}
+
+/* progress bar */
+#prog{position:fixed;top:0;left:0;height:3px;width:0;z-index:300;background:linear-gradient(90deg,var(--cyan),var(--pink),var(--gold));box-shadow:0 0 12px var(--pink)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:150;display:flex;justify-content:space-between;align-items:center;padding:14px 26px;background:rgba(3,3,15,.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line);transition:padding .3s}
+nav.small{padding:8px 26px}
+.logo{font-family:'Orbitron';font-weight:900;letter-spacing:.12em;font-size:1.15rem}
+.logo b{color:var(--pink);text-shadow:0 0 14px var(--pink)}
+.links{display:flex;gap:26px;list-style:none}
+.links a{font-weight:700;font-size:.85rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.7);position:relative;padding:4px 0;transition:color .25s}
+.links a::after{content:'';position:absolute;left:0;bottom:-2px;height:2px;width:0;background:var(--cyan);box-shadow:0 0 8px var(--cyan);transition:width .3s}
+.links a:hover{color:var(--cyan)} .links a:hover::after{width:100%}
+.cta{font-family:'Orbitron';font-weight:700;font-size:.75rem;letter-spacing:.14em;padding:10px 20px;border:1px solid var(--pink);color:var(--pink);border-radius:4px;transition:.25s;text-transform:uppercase}
+.cta:hover{background:var(--pink);color:#fff;box-shadow:0 0 22px var(--pink)}
+@media(max-width:860px){.links{display:none}}
+
+/* HERO */
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden;z-index:1}
+#arcade{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(3,3,15,.85) 0%,rgba(3,3,15,.35) 55%,transparent 80%),linear-gradient(180deg,rgba(3,3,15,.55),transparent 22%,transparent 70%,var(--navy));pointer-events:none}
+.hero-in{position:relative;z-index:5;padding-top:90px;padding-bottom:70px}
+.badge{display:inline-flex;gap:10px;align-items:center;font-family:'Orbitron';font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;padding:7px 16px;border:1px solid var(--cyan);color:var(--cyan);background:rgba(0,245,255,.07);border-radius:30px;margin-bottom:22px}
+.badge i{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);animation:pulse 1.4s infinite}
+@keyframes pulse{50%{opacity:.3;transform:scale(.7)}}
+.title{font-weight:900;font-size:clamp(3.6rem,12vw,9rem);line-height:.88;letter-spacing:.04em;position:relative}
+.title .n{display:block;color:transparent;-webkit-text-stroke:2px var(--cyan);filter:drop-shadow(0 0 18px rgba(0,245,255,.7))}
+.title .r{display:block;background:linear-gradient(90deg,var(--pink),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 22px rgba(255,45,120,.6))}
+.title .g{position:absolute;inset:0;pointer-events:none}
+.title .g span{display:block}
+.glitch{animation:glitch 5s infinite steps(1)}
+@keyframes glitch{0%,92%,100%{transform:none}93%{transform:translate(4px,-2px) skewX(6deg)}95%{transform:translate(-5px,2px)}97%{transform:translate(3px,1px) skewX(-5deg)}}
+.sub{font-family:'Orbitron';font-size:clamp(1rem,2.4vw,1.6rem);letter-spacing:.5em;text-transform:uppercase;color:var(--gold);margin:18px 0 12px;text-shadow:0 0 16px rgba(255,194,26,.6)}
+.lead{max-width:560px;color:rgba(255,255,255,.82);font-size:1.18rem;margin-bottom:30px}
+.btns{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+.btn{position:relative;overflow:hidden;font-family:'Orbitron';font-weight:900;font-size:.9rem;letter-spacing:.14em;text-transform:uppercase;padding:16px 34px;border-radius:6px;transition:transform .2s,box-shadow .25s;display:inline-flex;gap:10px;align-items:center}
+.btn.p{background:linear-gradient(135deg,var(--pink),#ff6a00);color:#fff;box-shadow:0 0 28px rgba(255,45,120,.5)}
+.btn.p:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 0 48px rgba(255,45,120,.85)}
+.btn.s{border:2px solid var(--cyan);color:var(--cyan);background:rgba(0,245,255,.06)}
+.btn.s:hover{background:var(--cyan);color:#000;box-shadow:0 0 30px var(--cyan);transform:translateY(-3px)}
+.btn::after{content:'';position:absolute;top:0;left:-70%;width:50%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);transform:skewX(-20deg);animation:shine 3.4s infinite}
+@keyframes shine{0%{left:-70%}45%,100%{left:140%}}
+.store{display:inline-flex;gap:12px;align-items:center;padding:10px 20px;border:1px solid rgba(255,255,255,.3);border-radius:10px;background:rgba(255,255,255,.05);transition:.25s}
+.store:hover{border-color:var(--green);box-shadow:0 0 22px rgba(105,240,174,.45);transform:translateY(-2px)}
+.store svg{width:28px;height:28px;fill:#fff}
+.store small{display:block;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.65);line-height:1}
+.store strong{font-family:'Orbitron';font-size:1rem;letter-spacing:.06em}
+/* floating HUD tied to the demo */
+.hud{position:absolute;right:22px;top:96px;z-index:6;display:flex;flex-direction:column;gap:8px;align-items:flex-end;font-family:'Orbitron'}
+.chip{font-size:.72rem;letter-spacing:.14em;padding:7px 14px;border:1px solid var(--line);border-radius:8px;background:rgba(3,3,15,.7);backdrop-filter:blur(6px);min-width:150px;text-align:right}
+.chip b{color:var(--cyan);font-size:1rem}
+.chip.surge{border-color:var(--gold);color:var(--gold);opacity:0;transform:translateY(12px) scale(.9);transition:.4s}
+.chip.surge.on{opacity:1;transform:none;box-shadow:0 0 22px rgba(255,194,26,.5)}
+.scroll{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);z-index:6;font-size:.7rem;letter-spacing:.3em;color:rgba(255,255,255,.6);text-align:center}
+.scroll i{display:block;margin:8px auto 0;width:2px;height:34px;background:linear-gradient(var(--cyan),transparent);animation:drip 1.6s infinite}
+@keyframes drip{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+@media(max-width:700px){.hud{top:auto;bottom:70px;right:12px}.chip{min-width:0;font-size:.62rem;padding:5px 9px}}
+
+/* ticker */
+.ticker{position:relative;z-index:2;overflow:hidden;border-block:1px solid var(--line);background:rgba(0,245,255,.04);padding:12px 0}
+.ticker div{display:flex;gap:46px;white-space:nowrap;width:max-content;animation:tick 38s linear infinite;font-family:'Orbitron';font-size:.8rem;letter-spacing:.3em;color:rgba(255,255,255,.55)}
+.ticker b{color:var(--pink)}
+@keyframes tick{to{transform:translateX(-50%)}}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:54px 0 10px}
+.stat{text-align:center;padding:22px 10px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,rgba(0,245,255,.06),transparent)}
+.stat .v{font-family:'Orbitron';font-weight:900;font-size:clamp(1.8rem,5vw,3rem);color:var(--cyan);text-shadow:0 0 18px rgba(0,245,255,.6)}
+.stat .l{font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+@media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+/* chapters */
+section.ch{position:relative;z-index:1;padding:96px 0}
+.tag{font-family:'Orbitron';font-size:.72rem;letter-spacing:.3em;color:var(--pink);text-transform:uppercase}
+h2{font-weight:900;font-size:clamp(1.9rem,5vw,3.3rem);line-height:1.05;margin:10px 0 16px;letter-spacing:.02em}
+h2 em{font-style:normal;color:var(--cyan);text-shadow:0 0 22px rgba(0,245,255,.55)}
+h2 em.p{color:var(--pink);text-shadow:0 0 22px rgba(255,45,120,.55)} h2 em.g{color:var(--gold);text-shadow:0 0 22px rgba(255,194,26,.5)}
+.p-lead{color:rgba(255,255,255,.78);max-width:560px;margin-bottom:22px}
+.split{display:grid;grid-template-columns:1fr 1.05fr;gap:46px;align-items:center}
+.split.rev{grid-template-columns:1.05fr 1fr}.split.rev .txt{order:2}
+@media(max-width:900px){.split,.split.rev{grid-template-columns:1fr}.split.rev .txt{order:0}}
+.ticks{list-style:none;display:grid;gap:10px}
+.ticks li{padding-left:30px;position:relative;color:rgba(255,255,255,.86)}
+.ticks li::before{content:'';position:absolute;left:0;top:.5em;width:14px;height:14px;border:2px solid var(--cyan);transform:rotate(45deg);box-shadow:0 0 10px var(--cyan)}
+.ticks li b{color:#fff}
+
+/* screens */
+.screen{position:relative;border:1px solid var(--line);border-radius:16px;background:#050514;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.03),0 24px 70px rgba(0,0,0,.6),0 0 60px rgba(0,245,255,.08)}
+.screen canvas{display:block;width:100%;height:auto;aspect-ratio:16/10}
+.screen .bar{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--line);font-family:'Orbitron';font-size:.62rem;letter-spacing:.2em;color:rgba(255,255,255,.55);align-items:center}
+.screen .bar i{width:9px;height:9px;border-radius:50%;background:var(--pink)}.screen .bar i:nth-child(2){background:var(--gold)}.screen .bar i:nth-child(3){background:var(--green)}
+.screen .bar span{margin-left:auto}
+.ctl{display:flex;gap:8px;flex-wrap:wrap;padding:12px;border-top:1px solid var(--line);justify-content:center}
+.ctl button{font-family:'Orbitron';font-weight:700;font-size:.72rem;letter-spacing:.12em;padding:9px 16px;border-radius:6px;border:1px solid var(--gold);background:transparent;color:var(--gold);cursor:pointer;transition:.2s}
+.ctl button:hover,.ctl button.on{background:var(--gold);color:#000;box-shadow:0 0 18px var(--gold)}
+.ctl button.red{border-color:var(--pink);color:var(--pink)}.ctl button.red:hover{background:var(--pink);color:#fff;box-shadow:0 0 20px var(--pink)}
+.cap{text-align:center;font-size:.8rem;letter-spacing:.14em;color:rgba(255,255,255,.55);padding:0 12px 12px;min-height:1.9em}
+
+/* cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;margin-top:34px}
+.card{position:relative;padding:26px 22px;border-radius:16px;border:1px solid var(--line);background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.01));transition:transform .25s,border-color .25s,box-shadow .25s;transform-style:preserve-3d;overflow:hidden}
+.card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--mx,50%) var(--my,0%),rgba(0,245,255,.18),transparent 55%);opacity:0;transition:opacity .3s;pointer-events:none}
+.card:hover{border-color:var(--cyan);box-shadow:0 14px 44px rgba(0,0,0,.5),0 0 30px rgba(0,245,255,.18)}
+.card:hover::before{opacity:1}
+.card .ic{font-size:2rem;display:block;margin-bottom:10px;filter:drop-shadow(0 0 10px rgba(0,245,255,.7))}
+.card img.ic{width:62px;height:62px;object-fit:contain;filter:drop-shadow(0 0 12px rgba(0,245,255,.6))}
+.card h3{font-size:1rem;letter-spacing:.08em;margin-bottom:8px}
+.card p{color:rgba(255,255,255,.72);font-size:1rem}
+
+/* realms */
+.realm{position:relative;border-radius:18px;overflow:hidden;border:1px solid var(--line);aspect-ratio:21/9;background:#07071a}
+.realm .pan{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.2s;animation:drift 22s ease-in-out infinite alternate}
+.realm .pan.on{opacity:1}
+@keyframes drift{from{transform:scale(1.08) translateX(-2%)}to{transform:scale(1.18) translateX(2%)}}
+.realm::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(3,3,15,.55),transparent 30%,transparent 55%,rgba(3,3,15,.85));pointer-events:none}
+.ring{position:absolute;z-index:3;left:50%;top:50%;height:112%;width:auto;transform:translate(-50%,-50%);animation:breathe 3s ease-in-out infinite,glow 2.4s ease-in-out infinite alternate;pointer-events:none;opacity:.92}
+@keyframes breathe{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.045)}}
+@keyframes glow{from{filter:drop-shadow(0 0 10px #00f5ff)}to{filter:drop-shadow(0 0 34px #00f5ff) drop-shadow(0 0 60px #bf00ff)}}
+.realm .name{position:absolute;z-index:4;left:20px;bottom:16px;font-family:'Orbitron';font-weight:900;letter-spacing:.2em;font-size:clamp(.9rem,2.4vw,1.5rem);text-shadow:0 0 18px #000}
+.realm .dots{position:absolute;z-index:4;right:18px;bottom:20px;display:flex;gap:8px}
+.realm .dots i{width:30px;height:4px;background:rgba(255,255,255,.3);cursor:pointer;transition:.3s}.realm .dots i.on{background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+.realm.noart{background:radial-gradient(circle at 50% 50%,rgba(191,0,255,.35),transparent 60%),#07071a}
+
+/* doors */
+.doors{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:34px}
+@media(max-width:800px){.doors{grid-template-columns:1fr}}
+.door{position:relative;padding:34px 28px;border-radius:20px;border:2px solid;overflow:hidden;min-height:250px;transition:transform .3s,box-shadow .3s}
+.door.h{border-color:var(--pink);background:linear-gradient(160deg,rgba(255,45,120,.2),rgba(10,10,31,.9) 60%)}
+.door.a{border-color:var(--gold);background:linear-gradient(160deg,rgba(255,194,26,.18),rgba(10,10,31,.9) 60%)}
+.door:hover{transform:translateY(-6px)}
+.door.h:hover{box-shadow:0 0 50px rgba(255,45,120,.4)}.door.a:hover{box-shadow:0 0 50px rgba(255,194,26,.4)}
+.door h3{font-size:1.7rem;letter-spacing:.14em}.door.h h3{color:var(--pink)}.door.a h3{color:var(--gold)}
+.door .pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.door .pills span{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;padding:5px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.05);transition:.25s}
+.door:hover .pills span{border-color:#fff}
+.door .glow{position:absolute;right:-60px;bottom:-60px;width:220px;height:220px;border-radius:50%;filter:blur(50px);opacity:.5;animation:pulse 3s infinite}
+.door.h .glow{background:var(--pink)}.door.a .glow{background:var(--gold)}
+
+/* finale */
+.fin{position:relative}
+.fin .rew{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;padding:6px 10px 14px}
+.fin .rew div{width:84px;text-align:center;font-family:'Orbitron';font-size:.55rem;letter-spacing:.1em;color:rgba(255,255,255,.8);opacity:0;transform:scale(.3) translateY(20px);transition:opacity .4s,transform .5s cubic-bezier(.2,1.6,.4,1)}
+.fin .rew div.on{opacity:1;transform:none}
+.fin .rew img{width:64px;height:64px;object-fit:contain;margin:0 auto 4px;filter:drop-shadow(0 0 14px var(--gold))}
+.fin .rew .gm{font-size:2.6rem;line-height:64px;height:64px}
+
+/* briefing */
+.brief{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:16px;margin-top:34px}
+.step{position:relative;display:flex;gap:18px;padding:22px;border:1px solid var(--line);border-radius:16px;background:rgba(10,10,31,.75);transition:.3s}
+.step:hover{border-color:var(--pink);transform:translateY(-4px);box-shadow:0 12px 36px rgba(255,45,120,.15)}
+.step .num{font-family:'Orbitron';font-weight:900;font-size:2.2rem;line-height:1;color:transparent;-webkit-text-stroke:1.5px var(--pink);min-width:56px}
+.step h3{font-size:.95rem;letter-spacing:.06em;margin-bottom:6px;color:var(--cyan)}
+.step p{color:rgba(255,255,255,.74);font-size:.98rem}
+.step.new::after{content:'NEW';position:absolute;top:12px;right:12px;font-family:'Orbitron';font-size:.55rem;letter-spacing:.2em;padding:3px 8px;border-radius:10px;background:var(--gold);color:#000;font-weight:900}
+
+/* studio */
+.by{display:flex;align-items:center;gap:12px;margin-bottom:16px;opacity:0;animation:fadein 1.2s .4s forwards}
+.by img{height:38px;width:auto;filter:drop-shadow(0 0 10px rgba(30,120,255,.8))}
+.by span{font-family:'Orbitron';font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+@keyframes fadein{to{opacity:1}}
+.studio{position:relative;z-index:1;padding:100px 0;overflow:hidden;background:linear-gradient(180deg,transparent,rgba(30,110,255,.08) 50%,transparent)}
+.studio .stage{position:relative;text-align:center;padding:44px 20px 10px}
+.studio .stage::before{content:'';position:absolute;left:50%;top:50%;width:min(900px,120%);height:360px;transform:translate(-50%,-50%);background:radial-gradient(ellipse,rgba(40,130,255,.38),rgba(120,60,255,.14) 45%,transparent 70%);animation:pulse 4.5s infinite}
+.logoWrap{position:relative;display:inline-block;width:min(640px,88%)}
+.logoWrap img{width:100%;height:auto;position:relative;z-index:1;animation:floaty 6s ease-in-out infinite;filter:drop-shadow(0 0 26px rgba(40,130,255,.65)) brightness(1.18) contrast(1.05)}
+@keyframes floaty{50%{transform:translateY(-10px)}}
+.logoWrap::after{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.55) 50%,transparent 65%);background-size:250% 100%;background-position:-120% 0;animation:sweep 5s 1s infinite;-webkit-mask:url(jerussfly.webp) center/contain no-repeat;mask:url(jerussfly.webp) center/contain no-repeat}
+@keyframes sweep{0%{background-position:-120% 0}45%,100%{background-position:220% 0}}
+.orbit{position:absolute;left:50%;top:50%;width:0;height:0;z-index:0}
+.orbit i{position:absolute;width:6px;height:6px;border-radius:50%;background:#4aa3ff;box-shadow:0 0 12px #4aa3ff;animation:orb var(--d) linear infinite}
+@keyframes orb{from{transform:rotate(var(--a)) translateX(var(--r)) scale(var(--s))}to{transform:rotate(calc(var(--a) + 360deg)) translateX(var(--r)) scale(var(--s))}}
+.studio .tagline{font-family:'Orbitron';letter-spacing:.34em;font-size:.75rem;text-transform:uppercase;color:#7fb8ff;text-align:center;margin:26px 0 8px}
+.studio p.lead2{max-width:640px;margin:0 auto 34px;text-align:center;color:rgba(255,255,255,.78)}
+.prods{display:flex;flex-wrap:wrap;gap:22px;justify-content:center}
+.prod{position:relative;flex:1 1 420px;max-width:760px;display:grid;grid-template-columns:200px 1fr;gap:26px;align-items:center;padding:28px;border-radius:20px;border:1px solid rgba(80,160,255,.45);background:linear-gradient(140deg,rgba(40,100,255,.16),rgba(255,45,120,.1) 70%,rgba(10,10,31,.9));overflow:hidden;transition:transform .3s,box-shadow .3s}
+.prod:hover{transform:translateY(-6px);box-shadow:0 0 50px rgba(60,140,255,.35)}
+.prod .art{position:relative;height:200px;border-radius:14px;background:radial-gradient(circle at 50% 60%,rgba(255,45,120,.4),#0a0620 70%);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.prod .art::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,245,255,.2) 1px,transparent 1px);background-size:100% 22px;animation:gridmove 1.2s linear infinite;opacity:.5}
+@keyframes gridmove{to{background-position:0 22px}}
+.prod .art img{position:relative;height:150px;width:auto;filter:drop-shadow(0 0 16px #00f5ff)}
+.prod .art .gl{position:absolute;width:60%;height:3px;left:-60%;top:var(--t);background:linear-gradient(90deg,transparent,#00f5ff);animation:streak 1.6s var(--w) linear infinite}
+@keyframes streak{to{left:130%}}
+.prod h3{font-size:1.25rem;letter-spacing:.08em;margin-bottom:4px}
+.prod h3 small{display:block;font-size:.65rem;letter-spacing:.3em;color:var(--pink);margin-bottom:6px}
+.prod p{color:rgba(255,255,255,.78);font-size:1rem;margin-bottom:14px}
+.prod .tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.prod .tags span{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;padding:4px 11px;border-radius:20px;border:1px solid rgba(255,255,255,.3)}
+.prod .btn{padding:12px 24px;font-size:.78rem}
+@media(max-width:640px){.prod{grid-template-columns:1fr}.prod .art{height:170px}}
+footer .flogo{height:46px;width:auto;margin:0 auto 10px;filter:drop-shadow(0 0 10px rgba(40,130,255,.6)) brightness(1.15)}
+
+/* boss files */
+.bstage{position:relative;display:grid;grid-template-columns:1fr 1.05fr;gap:10px;align-items:center;min-height:470px;padding:30px;border-radius:22px;border:1px solid var(--bc,var(--line));background:linear-gradient(150deg,rgba(255,255,255,.04),rgba(10,10,31,.92));overflow:hidden;transition:border-color .6s,box-shadow .6s;box-shadow:0 0 60px rgba(0,0,0,.5),0 0 50px -10px var(--bc,transparent)}
+.bstage .bglow{position:absolute;right:-8%;top:50%;width:70%;aspect-ratio:1;transform:translateY(-50%);border-radius:50%;background:radial-gradient(circle,var(--bc,#00f5ff),transparent 66%);opacity:.34;filter:blur(26px);transition:background .6s;animation:pulse 4s infinite}
+.bstage .bgrid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:36px 36px;mask-image:radial-gradient(circle at 70% 50%,#000,transparent 70%);-webkit-mask-image:radial-gradient(circle at 70% 50%,#000,transparent 70%)}
+.binfo{position:relative;z-index:2}
+.binfo .no{font-family:'Orbitron';font-size:.7rem;letter-spacing:.32em;color:rgba(255,255,255,.6)}
+.binfo h3{font-size:clamp(1.8rem,4.6vw,3rem);line-height:1;margin:10px 0 12px;color:var(--bc,#fff);text-shadow:0 0 28px var(--bc,transparent);transition:color .5s}
+.binfo p{color:rgba(255,255,255,.76);max-width:360px;margin-bottom:18px}
+.binfo .bar{height:3px;background:rgba(255,255,255,.14);border-radius:2px;overflow:hidden;max-width:300px}
+.binfo .bar i{display:block;height:100%;width:0;background:var(--bc,#fff);box-shadow:0 0 10px var(--bc,#fff)}
+.bart{position:relative;z-index:2;height:430px;display:flex;align-items:center;justify-content:center}
+.bart img{max-height:100%;max-width:100%;width:auto;object-fit:contain;filter:drop-shadow(0 0 30px var(--bc,#00f5ff));animation:bfloat 5s ease-in-out infinite;transition:opacity .45s,transform .45s}
+.bart img.out{opacity:0;transform:scale(.88) translateX(30px)}
+@keyframes bfloat{50%{transform:translateY(-14px) rotate(.8deg)}}
+.bthumbs{position:relative;z-index:2;display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:18px}
+.bthumbs button{width:74px;height:74px;border-radius:12px;border:2px solid rgba(255,255,255,.18);background:rgba(10,10,31,.8);cursor:pointer;padding:4px;transition:.25s;overflow:hidden}
+.bthumbs button img{width:100%;height:100%;object-fit:contain;filter:grayscale(.7) brightness(.8);transition:.25s}
+.bthumbs button:hover img,.bthumbs button.on img{filter:none}
+.bthumbs button.on{border-color:var(--c);box-shadow:0 0 22px var(--c);transform:translateY(-4px)}
+@media(max-width:800px){.bstage{grid-template-columns:1fr;padding:20px;text-align:center}.binfo p,.binfo .bar{margin-inline:auto}.bart{height:320px}.bthumbs button{width:58px;height:58px}}
+
+/* final CTA */
+.final{position:relative;z-index:1;text-align:center;padding:120px 0 110px;overflow:hidden}
+.final::before{content:'';position:absolute;left:50%;top:50%;width:900px;height:900px;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,45,120,.25),transparent 60%);animation:pulse 4s infinite}
+.final h2{font-size:clamp(2.4rem,8vw,5.6rem)}
+.final p{color:rgba(255,255,255,.75);margin:6px 0 30px;font-size:1.2rem}
+footer{position:relative;z-index:1;text-align:center;padding:34px 20px 46px;border-top:1px solid var(--line);color:rgba(255,255,255,.55);font-size:.9rem}
+footer .logo{margin-bottom:8px}
+footer .fl{display:flex;gap:22px;justify-content:center;margin-top:10px}
+footer a:hover{color:var(--cyan)}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(34px);transition:opacity .8s,transform .8s cubic-bezier(.2,.8,.2,1)}
+.rv.in{opacity:1;transform:none}
+.rv.l{transform:translateX(-50px)}.rv.r{transform:translateX(50px)}.rv.l.in,.rv.r.in{transform:none}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .rv{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+
+<nav id="nav">
+  <a href="#top" class="logo"><b>NEON</b> RUSH</a>
+  <ul class="links">
+    <li><a href="#fight">Fight</a></li>
+    <li><a href="#bosses">Bosses</a></li>
+    <li><a href="#realms">Realms</a></li>
+    <li><a href="#allies">Allies</a></li>
+    <li><a href="#hangar">Hangar</a></li>
+    <li><a href="#briefing">Briefing</a></li>
+    <li><a href="#studio">Studio</a></li>
+  </ul>
+  <a class="cta" href="https://play.google.com/store/apps/details?id=com.neonrushinfinite.game" target="_blank" rel="noopener">Play Now</a>
+</nav>
+
+<!-- HERO with an auto-playing demo of the game -->
+<header class="hero" id="top">
+  <canvas id="arcade"></canvas>
+  <div class="hud" aria-hidden="true">
+    <div class="chip">SCORE <b id="hScore">0</b></div>
+    <div class="chip">ZONE <b id="hZone">1</b></div>
+    <div class="chip">💎 <b id="hGems">0</b></div>
+    <div class="chip surge" id="hSurge">⚡ WEAPON SURGE</div>
+  </div>
+  <div class="wrap hero-in">
+    <div class="by"><img src="jerussfly.webp" alt="JerussFly Technologies" onerror="this.style.display='none'"><span>presents</span></div>
+    <div class="badge"><i></i> Live on Android</div>
+    <h1 class="title glitch"><span class="n">NEON</span><span class="r">RUSH</span></h1>
+    <p class="sub">How far can you go?</p>
+    <p class="lead">A neon cyberpunk runner where the danger grows and so does your gun. Fight real bosses, call air strikes, fly beside a combat wingman and slip through portals into other realms.</p>
+    <div class="btns">
+      <a class="btn p" href="https://play.google.com/store/apps/details?id=com.neonrushinfinite.game" target="_blank" rel="noopener">▶ Start Rush</a>
+      <a class="btn s" href="#briefing">Mission Briefing</a>
+    </div>
+    <a class="store" href="https://play.google.com/store/apps/details?id=com.neonrushinfinite.game" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24"><path d="M3.18 23.76A2 2 0 0 1 2 22V2a2 2 0 0 1 1.18-1.76l11.29 11.41zM21.14 10.5l-2.84-1.61-3.19 3.21 3.19 3.2 2.87-1.63a2 2 0 0 0 0-3.17zM3.61.32L16.31 8.1l-3.19 3.2zM3.61 23.68l9.51-9.38 3.19 3.2z"/></svg>
+      <span><small>Get it on</small><strong>Google Play</strong></span>
+    </a>
+  </div>
+  <div class="scroll">SCROLL<i></i></div>
+</header>
+
+<div class="ticker"><div id="tk"></div></div>
+
+<div class="wrap">
+  <div class="stats">
+    <div class="stat rv"><div class="v" data-n="∞">∞</div><div class="l">Endless Zones</div></div>
+    <div class="stat rv"><div class="v" data-n="4">0</div><div class="l">Difficulty Tiers</div></div>
+    <div class="stat rv"><div class="v" data-n="5">0</div><div class="l">Gun Streams</div></div>
+    <div class="stat rv"><div class="v" data-n="24">0</div><div class="l">Hours of Daily Challenge</div></div>
+  </div>
+</div>
+
+<!-- FIGHT -->
+<section class="ch" id="fight">
+  <div class="wrap split">
+    <div class="txt rv l">
+      <div class="tag">// Chapter 01 · Fight Back</div>
+      <h2>A gun that <em class="g">grows</em> with the danger</h2>
+      <p class="p-lead">When hazards stack up, a WEAPON SURGE button flashes for two seconds. Tap it and your gun adds another stream of shots, each one locking onto its own target.</p>
+      <ul class="ticks">
+        <li><b>2 hazards attacking</b> at once: twin guns, +25% damage.</li>
+        <li><b>3 hazards:</b> three streams, +50%.</li>
+        <li><b>4 hazards:</b> four streams, +75%.</li>
+        <li><b>5 hazards:</b> five streams, +100%.</li>
+        <li>One volley still costs <b>one shot</b>. Against a boss the volley is capped, so air strikes stay your real answer.</li>
+        <li>Between big waves you get <b>breathing room</b>: each extra hazard attacking at once makes new ones arrive 10 percent less often.</li>
+      </ul>
+    </div>
+    <div class="rv r">
+      <div class="screen">
+        <div class="bar"><i></i><i></i><i></i><span>WEAPON SURGE · TRY IT</span></div>
+        <canvas id="surge" width="800" height="500"></canvas>
+        <div class="ctl" id="surgeCtl">
+          <button data-s="1" class="on">1 GUN</button><button data-s="2">2 GUNS</button><button data-s="3">3 GUNS</button><button data-s="4">4 GUNS</button><button data-s="5">5 GUNS</button>
+        </div>
+        <div class="cap" id="surgeCap">Pick a step and watch every stream pick its own target.</div>
+      </div>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="grid">
+      <div class="card rv"><img class="ic" src="bolt.webp" alt="" onerror="this.outerHTML='<span class=ic>🔫</span>'"><h3>ARMOR MAGAZINES</h3><p>Collect armor on the track and it stays loaded in your gun. Armor rounds hit harder and one blast wipes out a boss brood.</p></div>
+      <div class="card rv"><img class="ic" src="bomb.webp" alt="" onerror="this.outerHTML='<span class=ic>💣</span>'"><h3>BOMBS</h3><p>Wipe out boss spawn and shake the boss with the BOMB button. Keep a pocket of bombs and a reserve behind it.</p></div>
+      <div class="card rv"><img class="ic" src="mil.webp" alt="" onerror="this.outerHTML='<span class=ic>🛡️</span>'"><h3>MILITARY SHIELD</h3><p>The rare gold shield takes 10 hits, then keeps protecting you for 4 more seconds. Make them count.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- BOSS FILES -->
+<section class="ch" id="bosses">
+  <div class="wrap">
+    <div class="rv" style="text-align:center;max-width:720px;margin:0 auto 30px">
+      <div class="tag">// Chapter 02 · The Boss</div>
+      <h2>Meet the <em class="p">boss</em></h2>
+      <p class="p-lead" style="margin-inline:auto">A boss arrives every few zones, and it does not arrive alone. This one is waiting for you.</p>
+    </div>
+    <div class="bstage rv" id="bstage">
+      <div class="bgrid"></div><div class="bglow"></div>
+      <div class="binfo">
+        <div class="no" id="bno">BOSS FILE</div>
+        <h3 id="bname">GREEN HELL</h3>
+        <p>Beat the escorts, break the shield, then take it down. Beat the last boss of a world and it bursts into pieces.</p>
+        <div class="bar"><i id="bbar"></i></div>
+      </div>
+      <div class="bart"><img id="bimg" alt="" onerror="this.style.display='none'"></div>
+    </div>
+    <div class="bthumbs rv" id="bthumbs"></div>
+  </div>
+</section>
+
+<!-- FINALE -->
+<section class="ch" id="finale" style="background:linear-gradient(180deg,transparent,rgba(255,45,120,.06),transparent)">
+  <div class="wrap split rev">
+    <div class="txt rv r">
+      <div class="tag" style="color:var(--gold)">// Chapter 03 · The Finale</div>
+      <h2>Take down the <em class="p">finale boss</em></h2>
+      <p class="p-lead">A boss arrives every few zones, now with escort ships guarding it. Beat the escorts, break the shield, and when the last boss of a world falls it does not just disappear.</p>
+      <ul class="ticks">
+        <li>The boss shudders white-hot, then <b>bursts into shining pieces</b> of its own picture, in slow motion.</li>
+        <li>You cannot be hurt while the victory plays, so there is time to watch it.</li>
+        <li>The reward: <b>2 Military Shields, 2 airstrikes, 2 bombs and 10 gems.</b></li>
+        <li>Every species you destroy ranks up in the <b>Species Codex</b>.</li>
+      </ul>
+    </div>
+    <div class="rv l fin">
+      <div class="screen">
+        <div class="bar"><i></i><i></i><i></i><span>FINALE BOSS · DESTROY IT</span></div>
+        <canvas id="boss" width="800" height="500"></canvas>
+        <div class="rew" id="rew">
+          <div><img src="mil.webp" alt="" onerror="this.outerHTML='<span class=gm>🛡️</span>'">+2 MIL SHIELD</div>
+          <div><img src="jet.webp" alt="" onerror="this.outerHTML='<span class=gm>✈️</span>'">+2 AIRSTRIKE</div>
+          <div><img src="bomb.webp" alt="" onerror="this.outerHTML='<span class=gm>💣</span>'">+2 BOMBS</div>
+          <div><span class="gm">💎</span>+10 GEMS</div>
+        </div>
+        <div class="ctl"><button class="red" id="bossGo">🔥 FIRE AT THE BOSS</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REALMS -->
+<section class="ch" id="realms">
+  <div class="wrap">
+    <div class="rv" style="text-align:center;max-width:720px;margin:0 auto 34px">
+      <div class="tag">// Chapter 04 · Phase Gate</div>
+      <h2>A crack opens in <em>your lane</em></h2>
+      <p class="p-lead" style="margin-inline:auto">Every 8 to 14 minutes of flying, a portal drifts toward you in the middle of a run. Fly in and the whole screen becomes another realm for a few seconds. You keep flying, catch up to three gems and slip past floating obstacles. Then you snap back.</p>
+    </div>
+    <div class="realm rv" id="realm">
+      <img class="pan on" src="pan0.webp" alt="" onerror="this.parentNode.classList.add('noart')">
+      <img class="pan" src="pan1.webp" alt="">
+      <img class="pan" src="pan2.webp" alt="">
+      <img class="pan" src="pan3.webp" alt="">
+      <img class="ring" src="ring.webp" alt="" onerror="this.remove()">
+      <div class="name" id="realmName">CRYSTAL SEA</div>
+      <div class="dots" id="realmDots"><i class="on"></i><i></i><i></i><i></i></div>
+    </div>
+    <div class="grid">
+      <div class="card rv"><span class="ic">🌀</span><h3>ZONE ECHO</h3><p>Some gates drop you into a few seconds of a far zone like 30 or 50, with its real hazards, real speed and its guardian boss. Nothing counts and nothing is lost.</p></div>
+      <div class="card rv"><span class="ic">💎</span><h3>GIFT GEMS</h3><p>Steer to catch the gems floating through the realm: up to three per gate, and a PERFECT for slipping past every obstacle.</p></div>
+      <div class="card rv"><span class="ic">🛟</span><h3>ALWAYS SAFE</h3><p>You cannot be hurt inside a gate. It waits for a calm moment: no boss, no airstrike, never while paused.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ALLIES -->
+<section class="ch" id="allies" style="background:linear-gradient(180deg,transparent,rgba(0,245,255,.05),transparent)">
+  <div class="wrap">
+    <div class="rv" style="max-width:720px">
+      <div class="tag">// Chapter 05 · Call For Backup</div>
+      <h2>You are <em>never</em> alone up there</h2>
+    </div>
+    <div class="grid">
+      <div class="card rv"><img class="ic" src="jet.webp" alt="" onerror="this.outerHTML='<span class=ic>✈️</span>'"><h3>AIR SUPPORT</h3><p>A helicopter or jet strike cuts through boss shields while keeping you safe. Clean boss rounds earn extra strikes. (Pro)</p></div>
+      <div class="card rv"><img class="ic" src="pilot3.webp" alt="" onerror="this.outerHTML='<span class=ic>🪖</span>'"><h3>COMBAT WINGMAN</h3><p>A soldier with a rifle, jet-pack and gunship drones flies beside you in short sorties, shooting by itself and every time you shoot. Healing pills keep it alive.</p></div>
+      <div class="card rv"><img class="ic" src="heli.webp" alt="" onerror="this.outerHTML='<span class=ic>🚁</span>'"><h3>FLASH</h3><p>Your helper on the home screen learns how your runs end and suggests one thing at a time, free and gem fixes first.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- HANGAR & ARMORY -->
+<section class="ch" id="hangar">
+  <div class="wrap">
+    <div class="rv" style="max-width:720px">
+      <div class="tag">// Chapter 06 · Two Doors</div>
+      <h2>Hangar <em class="p">or</em> <em class="g">Armory</em>?</h2>
+      <p class="p-lead">The home screen has two doors. Each shows what is inside, marks what is new, and a daily spotlight picks something to try.</p>
+    </div>
+    <div class="doors">
+      <div class="door h rv l"><div class="glow"></div><h3>HANGAR</h3><p style="margin-top:8px;color:rgba(255,255,255,.8)">How you look and how you fly.</p>
+        <div class="pills"><span>Pilot suits</span><span>Ship hulls</span><span>Neon trails</span><span>Parts</span><span>Thrusters</span><span>Fuel tank</span></div></div>
+      <div class="door a rv r"><div class="glow"></div><h3>ARMORY</h3><p style="margin-top:8px;color:rgba(255,255,255,.8)">Everything that shoots or defends.</p>
+        <div class="pills"><span>Weapons</span><span>Bombs</span><span>Magazines</span><span>Military Shield</span><span>Wingman</span><span>Air support</span><span>Ammo depot</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- DAILY -->
+<section class="ch" style="padding-top:40px">
+  <div class="wrap">
+    <div class="rv" style="max-width:720px">
+      <div class="tag">// Chapter 07 · Come Back Daily</div>
+      <h2>Something <em>new</em> every day</h2>
+    </div>
+    <div class="grid">
+      <div class="card rv"><span class="ic">⛈️</span><h3>STORM RUN</h3><p>A short daily mini-game: catch falling storm cells and dodge lightning, with a different storm every day.</p></div>
+      <div class="card rv"><span class="ic">👻</span><h3>GHOST DUEL</h3><p>Race a rival pilot's ghost. Every win makes the rival stronger.</p></div>
+      <div class="card rv"><span class="ic">🎁</span><h3>DAILY CRATE</h3><p>Gems, bombs, airstrike calls or military shields. Play 6 days in a row for a bonus wheel with 5 free refills.</p></div>
+      <div class="card rv"><span class="ic">🏆</span><h3>GLOBAL BOARDS</h3><p>Compete on the worldwide leaderboard for your difficulty and earn your pilot title.</p></div>
+      <div class="card rv"><span class="ic">🎯</span><h3>DAILY MODIFIERS</h3><p>Powerup Party, Speed Surge, Mirror Mode and more. No two days play the same.</p></div>
+      <div class="card rv"><span class="ic">🎟️</span><h3>SCORE VOUCHERS</h3><p>Score 30,000 or more in a run to earn vouchers, then trade them for bombs, airstrikes or military shields.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- BRIEFING -->
+<section class="ch" id="briefing">
+  <div class="wrap">
+    <div class="rv" style="max-width:720px">
+      <div class="tag">// Mission Briefing</div>
+      <h2>How to <em>play</em></h2>
+    </div>
+    <div class="brief" id="brief"></div>
+  </div>
+</section>
+
+<!-- STUDIO -->
+<section class="studio" id="studio">
+  <div class="wrap">
+    <div class="stage rv">
+      <div class="orbit" id="orbit"></div>
+      <div class="logoWrap"><img src="jerussfly.webp" alt="JerussFly Technologies logo"></div>
+    </div>
+    <div class="tagline rv">The studio behind Neon Rush</div>
+    <p class="lead2 rv">JerussFly Technologies builds and publishes Neon Rush: Jetpack Space Run, from the neon runner itself to its bosses, wingman and portals.</p>
+    <div class="prods" id="prods"></div>
+  </div>
+</section>
+
+<section class="final">
+  <div class="wrap rv">
+    <h2>Ready to <em class="p">Rush?</em></h2>
+    <p>Free to download on Android. Skill decides the run.</p>
+    <a class="btn p" href="https://play.google.com/store/apps/details?id=com.neonrushinfinite.game" target="_blank" rel="noopener">▶ Download on Android</a>
+  </div>
+</section>
+
+<footer>
+  <img class="flogo" src="jerussfly.webp" alt="JerussFly Technologies" onerror="this.style.display='none'">
+  <p>© 2026 JerussFly Technologies · neonrushinfinite.com</p>
+  <div class="fl"><a href="privacy.html">Privacy</a><a href="privacy.html#contact">Contact</a><a href="https://github.com/Jousserwa/Neon-Rush---Infinite-Runner" target="_blank" rel="noopener">GitHub</a></div>
+</footer>
+
+<script>
+(function(){
+'use strict';
+var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function $(i){return document.getElementById(i)}
+function rnd(a,b){return a+Math.random()*(b-a)}
+function img(src){var i=new Image();i.ok=false;i.onload=function(){i.ok=true};i.src=src;return i}
+
+/* ---------- ticker ---------- */
+var words=['ENDLESS ZONES','REAL BOSSES','WEAPON SURGE','AIR SUPPORT','COMBAT WINGMAN','PHASE GATE','ZONE ECHO','HANGAR','ARMORY','GHOST DUEL','STORM RUN','GLOBAL BOARDS'];
+var t='';for(var k=0;k<2;k++)words.forEach(function(w){t+='<span>'+w+'</span><b>◆</b>'});
+$('tk').innerHTML=t;
+
+/* ---------- nav + progress ---------- */
+var nav=$('nav'),prog=$('prog');
+window.addEventListener('scroll',function(){
+  var y=window.scrollY,h=document.documentElement.scrollHeight-innerHeight;
+  prog.style.width=(h>0?y/h*100:0)+'%'; nav.classList.toggle('small',y>40);
+},{passive:true});
+
+/* ---------- reveal + counters ---------- */
+var io=new IntersectionObserver(function(es){es.forEach(function(e){
+  if(!e.isIntersecting)return; e.target.classList.add('in'); io.unobserve(e.target);
+  var v=e.target.querySelector&&e.target.querySelector('.v[data-n]');
+  if(v&&v.dataset.n!=='∞'){var to=+v.dataset.n,s=performance.now();(function f(n){var p=Math.min(1,(n-s)/1400);v.textContent=Math.round(to*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(f)})(s)}
+})},{threshold:.15});
+document.querySelectorAll('.rv').forEach(function(el,i){el.style.transitionDelay=(i%4)*70+'ms';io.observe(el)});
+
+/* ---------- card tilt + glow ---------- */
+document.querySelectorAll('.card').forEach(function(c){
+  c.addEventListener('mousemove',function(e){var r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
+    c.style.setProperty('--mx',x*100+'%');c.style.setProperty('--my',y*100+'%');
+    if(!reduce)c.style.transform='perspective(700px) rotateX('+((.5-y)*7)+'deg) rotateY('+((x-.5)*9)+'deg) translateY(-4px)'});
+  c.addEventListener('mouseleave',function(){c.style.transform=''});
+});
+
+/* ---------- briefing ---------- */
+var steps=[
+['Launch and Steer','Tap START RUSH. Your pilot flies forward on its own: drag up or down anywhere on the screen to steer. Pick EASY, MEDIUM, HARD or LEGENDARY first.'],
+['Follow the Ghost Marker','Stay close to the glowing ghost marker and you earn points every moment. Skim past obstacles for CLOSE CALL bonuses and build a combo.'],
+['Collect Gems and Fuel','Gems are your main currency. Fuel canisters top your tank up for free. If the tank runs low, tap the fuel bar to refuel with gems.'],
+['Use Your Shield','A glowing bubble around your pilot soaks up hits. Shield power-ups put it back, and the rare gold MILITARY SHIELD takes 10 hits, then keeps protecting you for 4 more seconds.'],
+['Fight Back','Tap FIRE to shoot obstacles, enemy bullets and bosses. Grab armor pickups for ammo (or buy shots at the Ammo Depot), and use the BOMB button to wipe out boss spawn and shake the boss.'],
+['Grow Your Gun: Weapon Surge','When hazards pile up, a WEAPON SURGE button flashes for 2 seconds. Tap it in time for another stream of shots: 2 guns when 2 hazards attack together, then 3, 4 and 5 guns as more join in, with +25% to +100% damage. Each gun picks its own target, one volley costs one shot, and the upgrade lasts the whole run. Against a boss the volley is capped, so air strikes stay your answer.','new'],
+['Beat the Bosses','A boss arrives every few zones, now with escort ships that guard it. Beat the escorts first. Each species you destroy ranks up in the Species Codex.'],
+['Finale Boss Down','Beat the last boss of a world and it bursts into shining pieces in a victory you can watch in safety. The reward: 2 Military Shields, 2 airstrikes, 2 bombs and 10 gems.','new'],
+['Call for Backup','Air Support (Pro) brings a helicopter or jet strike that cuts through boss shields while keeping you safe. The COMBAT WINGMAN fights beside you in short sorties, and its healing pills keep it alive.'],
+['Open the Daily Crate','Open the crate every day for gems, bombs, airstrike calls or military shields. Open it AND play 6 days in a row for a bonus wheel with 5 free refills (once a month).'],
+['Turn Big Scores into Rewards','Score 30,000 or more in a run to earn vouchers. Exchange them for bombs, airstrikes or military shields.'],
+['Play the Daily Modes','Storm Run is a short daily mini-game: catch falling storm cells and dodge lightning, with a different storm every day. In Ghost Duel you race a rival pilot\'s ghost, and every win makes the rival stronger.'],
+['Beat Your Best','Compete on the global boards for your difficulty, climb the Species Codex, collect skins for your pilot, hull, helicopter and jet, and push further every time.'],
+['Let FLASH Help','FLASH, your helper on the home screen, learns how your runs end and suggests one thing at a time: a free or gem fix first, and a locked item shows how close it is to opening. Upgrades unlock as you progress, and one real-money purchase a day keeps the game fun for everyone.'],
+['Two Doors: Hangar and Armory','The home screen has two doors. The Hangar holds everything for how you look and fly: pilot suits, hulls, trails, parts and the fuel tank. The Armory holds everything that shoots or defends. Each door shows what is inside, marks what is new, and a daily spotlight picks something to try.'],
+['Watch for the Phase Gate','Every 8 to 14 minutes of flying, in the middle of a run, a crack splits open in your lane and a portal drifts toward you. Fly in and the whole screen becomes another realm for a few seconds: you keep flying, catch up to three gems, and dodge floating obstacles. Some gates drop you into a zone echo: a few seconds of a far zone, like 30 or 50, with its real hazards and its boss, where nothing counts and nothing is lost. You are always safe inside, and you never know what you will see.']
+];
+var bh='';steps.forEach(function(s,i){bh+='<div class="step rv'+(s[2]?' new':'')+'"><div class="num">'+(i<9?'0':'')+(i+1)+'</div><div><h3>'+s[0]+'</h3><p>'+s[1]+'</p></div></div>'});
+$('brief').innerHTML=bh;
+document.querySelectorAll('#brief .rv').forEach(function(el,i){el.style.transitionDelay=(i%3)*80+'ms';io.observe(el)});
+
+/* ---------- studio: orbiting lights + product showcase ---------- */
+(function(){
+  var o=$('orbit'),h='';for(var i=0;i<14;i++){h+='<i style="--a:'+(i*26)+'deg;--r:'+(150+(i%4)*70)+'px;--d:'+(14+(i%5)*5)+'s;--s:'+(.5+(i%3)*.5)+'"></i>'}
+  if(o)o.innerHTML=h;
+  // add products here: one object per product
+  var PRODUCTS=[
+    {name:'Neon Rush: Jetpack Space Run',kind:'Flagship game',text:'A neon cyberpunk runner where the danger grows and so does your gun. Real bosses, air support, a combat wingman and portals to other realms.',tags:['Android','Free to download','Runner','Action'],href:'https://play.google.com/store/apps/details?id=com.neonrushinfinite.game',cta:'▶ Play on Google Play'}
+  ];
+  var el=$('prods');if(!el)return;
+  el.innerHTML=PRODUCTS.map(function(p){
+    var gl='';for(var i=0;i<5;i++)gl+='<div class="gl" style="--t:'+(14+i*18)+'%;--w:'+(i*.3)+'s"></div>';
+    return '<div class="prod rv"><div class="art">'+gl+'<img id="pfig" src="pilot1.webp" alt=""></div><div><h3><small>'+p.kind+'</small>'+p.name+'</h3><p>'+p.text+'</p><div class="tags">'+p.tags.map(function(t){return '<span>'+t+'</span>'}).join('')+'</div><a class="btn p" href="'+p.href+'" target="_blank" rel="noopener">'+p.cta+'</a></div></div>'}).join('');
+  el.querySelectorAll('.rv').forEach(function(x){io.observe(x)});
+  var f=0,pf=document.getElementById('pfig');if(pf&&!reduce)setInterval(function(){f=(f+1)%6;pf.src='pilot'+(f+1)+'.webp'},100);
+})();
+
+/* ---------- realms slideshow ---------- */
+(function(){
+  var pans=document.querySelectorAll('#realm .pan'),dots=document.querySelectorAll('#realmDots i'),nm=$('realmName'),names=['CRYSTAL SEA','STORM CITY','THE HANGAR','GIFT REALM'],cur=0,timer;
+  function go(i){cur=i;pans.forEach(function(p,j){p.classList.toggle('on',j===i)});dots.forEach(function(d,j){d.classList.toggle('on',j===i)});nm.textContent=names[i]}
+  dots.forEach(function(d,i){d.addEventListener('click',function(){go(i);clearInterval(timer);timer=setInterval(function(){go((cur+1)%4)},5200)})});
+  timer=setInterval(function(){go((cur+1)%4)},5200);
+})();
+
+/* ---------- shared art ---------- */
+var BOSSES=[
+ {n:'GREEN HELL',c:'#3dff9a',src:'boss_green_hell.webp'}
+];
+/* a boss picture that breaks into a 9x7 grid of shiny pieces */
+function Shatter(){this.f=[];this.img=null;this.dw=0;this.dh=0;this.t=0}
+Shatter.prototype.start=function(img,cx,cy,dh,pow){this.f=[];this.img=img;this.t=0;var ar=img&&img.ok?img.width/img.height:1,dw=dh*ar;this.dw=dw;this.dh=dh;
+  for(var iy=0;iy<7;iy++)for(var ix=0;ix<9;ix++){var dx=(ix+.5)/9-.5,dy=(iy+.5)/7-.5;
+    this.f.push({x:cx+dx*dw,y:cy+dy*dh,vx:dx*dw*1.5+rnd(-50,50)*pow-dw*.1,vy:dy*dh*1.9+rnd(-80,40)*pow,r:0,vr:rnd(-5,5),ix:ix,iy:iy,g:rnd(0,6.28)})}};
+Shatter.prototype.update=function(dt,tf){var d=dt*tf;this.t+=dt;this.f.forEach(function(f){f.x+=f.vx*d;f.y+=f.vy*d;f.vy+=260*d;f.r+=f.vr*d})};
+Shatter.prototype.draw=function(c){if(!this.f.length)return;var im=this.img,t=this.t,a=1-Math.min(1,Math.max(0,(t-3.2)/1.6));if(a<=0)return;
+  var tw=this.dw/9,th=this.dh/7,ok=im&&im.ok;
+  this.f.forEach(function(f){c.save();c.translate(f.x,f.y);c.rotate(f.r);c.globalAlpha=a;
+    if(ok){c.drawImage(im,f.ix*im.width/9,f.iy*im.height/7,im.width/9,im.height/7,-tw/2,-th/2,tw+1,th+1);var w=Math.max(0,1-t/1.2);if(w>0){c.globalAlpha=a*w*.6;c.fillStyle='#fff';c.fillRect(-tw/2,-th/2,tw,th)}}
+    else{c.fillStyle='#ff2d78';c.fillRect(-tw/2,-th/2,tw,th)}
+    c.restore();
+    var g=Math.sin(t*7+f.g);if(g>.82){c.save();c.globalAlpha=a;c.strokeStyle='#fff';c.lineWidth=2;var r=8*(g-.8)*5;c.beginPath();c.moveTo(f.x-r,f.y);c.lineTo(f.x+r,f.y);c.moveTo(f.x,f.y-r);c.lineTo(f.x,f.y+r);c.stroke();c.restore()}});
+  c.globalAlpha=1};
+var A={boss:BOSSES.map(function(b){return img(b.src)}),bolt:img('bolt.webp'),boltg:img('boltg.webp'),boom1:img('boom1.webp'),boom3:img('boom3.webp'),pilot:[]};
+for(var i=1;i<=6;i++)A.pilot.push(img('pilot'+i+'.webp'));
+function drawPilot(c,x,y,h,t){
+  var f=A.pilot[Math.floor(t*10)%6];
+  c.save();c.shadowColor='#00f5ff';c.shadowBlur=18;
+  if(f&&f.ok){var w=h*f.width/f.height;c.drawImage(f,x-w/2,y-h/2,w,h)}
+  else{c.fillStyle='#00f5ff';c.beginPath();c.moveTo(x+h*.4,y);c.lineTo(x-h*.3,y-h*.3);c.lineTo(x-h*.15,y);c.lineTo(x-h*.3,y+h*.3);c.closePath();c.fill()}
+  c.restore();
+}
+function fit(cv){var d=Math.min(2,window.devicePixelRatio||1),r=cv.getBoundingClientRect();if(!r.width)return false;var w=Math.round(r.width*d),h=Math.round(r.height*d);if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}return true}
+
+/* ---------- boss files gallery ---------- */
+(function(){
+  var st=$('bstage'),im=$('bimg'),nm=$('bname'),no=$('bno'),th=$('bthumbs'),bar=$('bbar'),cur=0,timer,t0=0;
+  if(!st||!im)return;
+  th.innerHTML=BOSSES.map(function(b,i){return '<button style="--c:'+b.c+'" aria-label="'+b.n+'"><img alt="" src="'+b.src+'"></button>'}).join('');
+  var btns=th.querySelectorAll('button');
+  function go(i){cur=i;var b=BOSSES[i];im.classList.add('out');
+    setTimeout(function(){im.src=b.src;st.style.setProperty('--bc',b.c);nm.textContent=b.n;no.textContent='BOSS FILE 0'+(i+1)+' / 0'+BOSSES.length;im.classList.remove('out')},260);
+    btns.forEach(function(x,j){x.classList.toggle('on',j===i)});t0=performance.now()}
+  btns.forEach(function(x,i){x.addEventListener('click',function(){go(i)})});
+  im.src=BOSSES[0].src;st.style.setProperty('--bc',BOSSES[0].c);btns[0].classList.add('on');t0=performance.now();
+  nm.textContent=BOSSES[0].n;if(BOSSES.length<2){th.style.display='none';bar.parentNode.style.display='none';no.textContent='BOSS FILE';return}
+  var run=true;new IntersectionObserver(function(e){run=e[0].isIntersecting}).observe(st);
+  (function tick(){requestAnimationFrame(tick);if(!run||reduce)return;var p=(performance.now()-t0)/5200;bar.style.width=Math.min(100,p*100)+'%';if(p>=1)go((cur+1)%BOSSES.length)})();
+})();
+
+/* ---------- HERO ARCADE: auto-playing demo ---------- */
+(function(){
+  var cv=$('arcade'),c=cv.getContext('2d');if(!c)return;
+  var W,H,time=0,last=0,score=0,gems=0,zone=1,cycle=0;
+  var stars=[],city=[],obs=[],bolts=[],fx=[],gm=[],texts=[];
+  var pilot={y:.5,ty:.5},guns=1,boss=null,flash=0,shake=0,bi=-1,shat=new Shatter();
+  var hS=$('hScore'),hZ=$('hZone'),hG=$('hGems'),hSu=$('hSurge');
+  function resize(){fit(cv);W=cv.width;H=cv.height;
+    stars=[];for(var i=0;i<90;i++)stars.push({x:Math.random()*W,y:Math.random()*H*.7,s:rnd(.4,1.6),v:rnd(8,40)});
+    city=[];var x=0;while(x<W*1.4){var w=rnd(30,90)*(W/1200+.4);city.push({x:x,w:w,h:rnd(.08,.34)*H,c:Math.random()<.5?'#ff2d78':'#00f5ff'});x+=w+rnd(4,24)}}
+  resize();window.addEventListener('resize',resize);
+  function txt(s,x,y,col){texts.push({s:s,x:x,y:y,col:col||'#fff',a:1})}
+  function burst(x,y,col,n,sp){for(var i=0;i<n;i++){var a=Math.random()*6.283,v=rnd(.2,1)*sp;fx.push({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:rnd(.4,.9),m:.9,col:col})}}
+  function spawn(){var y=rnd(.12,.88);var type=Math.random()<.22?'hz':'ob';obs.push({x:W+60,y:y*H,t:type,hp:type==='hz'?2:1,s:rnd(.7,1.1)*(H/600)})}
+  function spawnGem(){gm.push({x:W+30,y:rnd(.12,.88)*H})}
+  var spT=0,gT=0,surgeT=0,phase=0,phaseT=0;
+  /* timeline: 0 run, 1 surge steps, 2 boss fight, 3 victory */
+  function setPhase(p){phase=p;phaseT=0;
+    if(p===0){guns=1;hSu.classList.remove('on');boss=null}
+    if(p===1){guns=1}
+    if(p===2){bi=(bi+1)%BOSSES.length;boss={x:W+200,y:H*.5,hp:100,fl:0,dead:false};hSu.textContent='⚡ BOSS ENGAGED';hSu.classList.add('on')}
+    if(p===3){shat.start(A.boss[bi],boss.x,boss.y,H*.5,H/600);flash=1;shake=1;burst(boss.x,boss.y,'#ffc21a',90,520*(H/600));burst(boss.x,boss.y,'#fff',50,380*(H/600));burst(boss.x,boss.y,'#00f5ff',50,300*(H/600));
+      hSu.textContent='★ FINALE BOSS DOWN';hSu.classList.add('on');txt('FINALE BOSS DOWN',W*.55,H*.4,'#ffc21a');gems+=10;boss.dead=true}
+  }
+  function step(dt){
+    time+=dt;phaseT+=dt;
+    if(phase===0&&phaseT>9)setPhase(1);
+    else if(phase===1){var g=1+Math.min(4,Math.floor(phaseT/2.2));if(g!==guns){guns=g;if(g>1){hSu.textContent='⚡ '+g+' GUNS ONLINE';hSu.classList.add('on');txt('+'+(g-1)*25+'% DAMAGE',W*.3,H*.3,'#ffc21a')}}if(phaseT>12)setPhase(2)}
+    else if(phase===2){if(boss.hp<=0)setPhase(3)}
+    else if(phase===3&&phaseT>5)setPhase(0);
+    var sp=(phase===2?.5:1)*(W/900+.5)*200;
+    // spawn
+    spT-=dt;if(spT<=0&&phase!==2&&phase!==3){spT=phase===1?rnd(.35,.6):rnd(.7,1.3);spawn()}
+    gT-=dt;if(gT<=0&&phase!==3){gT=rnd(.8,1.6);spawnGem()}
+    // AI pilot: dodge nearest obstacle / chase gems
+    var px=W*.2,py=pilot.y*H,tgt=null,near=1e9;
+    obs.forEach(function(o){var d=o.x-px;if(d>0&&d<near&&o.t){near=d;tgt=o}});
+    if(phase===2&&boss){pilot.ty=.5+Math.sin(time*1.3)*.28}
+    else if(tgt&&near<W*.45&&Math.abs(tgt.y-py)<H*.14){pilot.ty=tgt.y>py?Math.max(.1,(py-H*.2)/H):Math.min(.9,(py+H*.2)/H)}
+    else{var gg=gm[0];if(gg&&gg.x>px)pilot.ty=gg.y/H;else pilot.ty=.5+Math.sin(time*.8)*.3}
+    pilot.y+=(pilot.ty-pilot.y)*Math.min(1,dt*5);
+    // shooting
+    surgeT-=dt;
+    if(surgeT<=0&&(phase>=1)){surgeT=phase===2?.28:.4;
+      var cand=obs.filter(function(o){return o.x>px+30&&o.x<W}).sort(function(a,b){return a.x-b.x}),n=guns;
+      for(var i=0;i<n;i++){var ty=py+(i-(n-1)/2)*H*.035;
+        if(phase===2&&boss)ty=boss.y+(i-(n-1)/2)*H*.03;else if(cand[i])ty=cand[i].y;
+        bolts.push({x:px+30,y:py,ty:ty,vx:W*1.5,g:i===0&&n>1?1:0})}
+    }
+    if(phase===0&&Math.random()<dt*.9&&obs.length){var o0=obs.filter(function(o){return o.x>px+80})[0];if(o0)bolts.push({x:px+30,y:py,ty:o0.y,vx:W*1.5,g:0})}
+    // move
+    bolts.forEach(function(b){b.x+=b.vx*dt;b.y+=(b.ty-b.y)*Math.min(1,dt*9)});
+    obs.forEach(function(o){o.x-=sp*o.s*dt});
+    gm.forEach(function(g){g.x-=sp*dt});
+    if(boss&&!boss.dead){boss.x+=(W*.8-boss.x)*Math.min(1,dt*2);boss.y+=((H*.5+Math.sin(time*.9)*H*.2)-boss.y)*Math.min(1,dt*2);boss.fl=Math.max(0,boss.fl-dt)}
+    // collisions
+    bolts=bolts.filter(function(b){
+      for(var i=0;i<obs.length;i++){var o=obs[i];if(Math.abs(o.x-b.x)<26&&Math.abs(o.y-b.y)<(H*.05)){o.hp--;burst(o.x,o.y,o.t==='hz'?'#ff2d78':'#00f5ff',14,200*(H/600));
+        if(o.hp<=0){obs.splice(i,1);score+=o.t==='hz'?150:60;burst(o.x,o.y,'#fff',10,260*(H/600))}return false}}
+      if(boss&&!boss.dead&&b.x>boss.x-H*.15&&Math.abs(b.y-boss.y)<H*.26){boss.hp-=2.4;boss.fl=.12;burst(b.x,b.y,'#ffc21a',8,260*(H/600));score+=10;return false}
+      return b.x<W+60});
+    obs=obs.filter(function(o){return o.x>-80});
+    gm=gm.filter(function(g){if(Math.abs(g.x-px)<40&&Math.abs(g.y-py)<H*.06){gems++;score+=25;txt('+1',g.x,g.y-10,'#69f0ae');burst(g.x,g.y,'#69f0ae',8,160*(H/600));return false}return g.x>-40});
+    shat.update(dt,(phase===3&&phaseT<2.5)?.4:1);
+    fx.forEach(function(p){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=260*dt;p.l-=dt});fx=fx.filter(function(p){return p.l>0});
+    texts.forEach(function(t){t.y-=30*dt;t.a-=dt*.7});texts=texts.filter(function(t){return t.a>0});
+    flash=Math.max(0,flash-dt*1.4);shake=Math.max(0,shake-dt*1.2);
+    score+=Math.round(dt*40);
+    if(Math.floor(time/22)+1!==zone){zone=Math.floor(time/22)+1}
+    if(Math.random()<.05){hS.textContent=score.toLocaleString();hZ.textContent=zone;hG.textContent=gems}
+  }
+  function draw(){
+    c.save();
+    if(shake>0)c.translate(rnd(-1,1)*shake*12,rnd(-1,1)*shake*12);
+    var g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,'#05031a');g.addColorStop(.6,'#150a33');g.addColorStop(1,'#2a0b3d');c.fillStyle=g;c.fillRect(-20,-20,W+40,H+40);
+    stars.forEach(function(s){s.x-=s.v*.016;if(s.x<0)s.x=W;c.fillStyle='rgba(255,255,255,'+(.3+s.s*.3)+')';c.fillRect(s.x,s.y,s.s,s.s)});
+    // sun
+    var sg=c.createRadialGradient(W*.72,H*.62,10,W*.72,H*.62,H*.5);sg.addColorStop(0,'rgba(255,45,120,.55)');sg.addColorStop(1,'transparent');c.fillStyle=sg;c.fillRect(0,0,W,H);
+    // city skyline scrolling
+    city.forEach(function(b){b.x-=30*.016*(W/900+.5);if(b.x+b.w<0)b.x+=W*1.4;c.fillStyle='#0a0620';c.fillRect(b.x,H*.72-b.h,b.w,b.h);c.fillStyle=b.c;c.globalAlpha=.55;c.fillRect(b.x,H*.72-b.h,b.w,2);c.globalAlpha=.25;for(var y=H*.72-b.h+8;y<H*.72;y+=14)c.fillRect(b.x+6,y,b.w-12,2);c.globalAlpha=1});
+    // floor grid
+    c.strokeStyle='rgba(0,245,255,.35)';c.lineWidth=1;var hz=H*.72;c.beginPath();c.moveTo(0,hz);c.lineTo(W,hz);c.stroke();
+    for(var i=0;i<14;i++){var yy=hz+Math.pow((i+(time*1.4)%1)/14,2.2)*(H-hz);c.globalAlpha=.15+i/30;c.beginPath();c.moveTo(0,yy);c.lineTo(W,yy);c.stroke()}
+    c.globalAlpha=.3;for(var j=-12;j<=12;j++){c.beginPath();c.moveTo(W/2+j*30,hz);c.lineTo(W/2+j*W*.16,H);c.stroke()}c.globalAlpha=1;
+    // gems
+    gm.forEach(function(q){c.save();c.translate(q.x,q.y);c.rotate(time*3);c.shadowColor='#69f0ae';c.shadowBlur=16;c.fillStyle='#69f0ae';c.beginPath();c.moveTo(0,-11);c.lineTo(9,0);c.lineTo(0,11);c.lineTo(-9,0);c.closePath();c.fill();c.restore()});
+    // obstacles + hazards
+    obs.forEach(function(o){c.save();c.translate(o.x,o.y);var hzd=o.t==='hz',col=hzd?'#ff2d78':'#00f5ff';c.shadowColor=col;c.shadowBlur=18;c.strokeStyle=col;c.lineWidth=3;c.fillStyle=hzd?'rgba(255,45,120,.25)':'rgba(0,245,255,.18)';
+      if(hzd){c.beginPath();for(var k=0;k<6;k++){var a=k*1.0472+time;c.lineTo(Math.cos(a)*20,Math.sin(a)*20)}c.closePath();c.fill();c.stroke();c.beginPath();c.arc(0,0,6,0,6.283);c.fillStyle=col;c.fill();
+        if(Math.sin(time*9+o.y)>.6){c.strokeStyle='rgba(255,45,120,.7)';c.beginPath();c.moveTo(-22,0);c.lineTo(-90,0);c.stroke()}}
+      else{c.fillRect(-14,-24,28,48);c.strokeRect(-14,-24,28,48)}c.restore()});
+    // boss: the real picture (falls back to a drawn shape), then its shards
+    if(boss&&!boss.dead){var bim=A.boss[bi];
+      if(bim&&bim.ok){var bh=H*.5,bw=bh*bim.width/bim.height;c.save();c.shadowColor=boss.fl>0?'#fff':BOSSES[bi].c;c.shadowBlur=40;if(boss.fl>0)c.filter='brightness(2.4)';c.drawImage(bim,boss.x-bw/2,boss.y-bh/2,bw,bh);c.restore()}
+      else{c.save();c.translate(boss.x,boss.y);var bs=H*.0022;c.scale(bs,bs);c.shadowColor=boss.fl>0?'#fff':'#ff2d78';c.shadowBlur=40;c.fillStyle=boss.fl>0?'#fff':'#1a0a2e';c.strokeStyle='#ff2d78';c.lineWidth=5;c.beginPath();c.moveTo(-110,0);c.lineTo(-50,-90);c.lineTo(60,-70);c.lineTo(120,-20);c.lineTo(120,20);c.lineTo(60,70);c.lineTo(-50,90);c.closePath();c.fill();c.stroke();c.restore()}
+      c.fillStyle='rgba(0,0,0,.6)';c.fillRect(W*.55,18,W*.4,10);c.fillStyle=BOSSES[bi].c;c.fillRect(W*.55,18,W*.4*Math.max(0,boss.hp)/100,10);}
+    shat.draw(c);
+    // pilot
+    var py=pilot.y*H;
+    c.save();c.globalAlpha=.25;c.fillStyle='#00f5ff';for(var q=1;q<6;q++){c.fillRect(W*.2-q*16-30,py-2,12,4)}c.restore();
+    drawPilot(c,W*.2,py,Math.max(70,H*.2),time);
+    // bolts
+    bolts.forEach(function(b){var im=b.g?A.boltg:A.bolt;
+      if(im&&im.ok){c.drawImage(im,b.x-60,b.y-10,90,20)}else{c.save();c.shadowColor='#00f5ff';c.shadowBlur=14;c.strokeStyle='#fff';c.lineWidth=3;c.beginPath();c.moveTo(b.x-40,b.y);c.lineTo(b.x,b.y);c.stroke();c.restore()}});
+    // particles
+    fx.forEach(function(p){c.globalAlpha=Math.max(0,p.l/p.m);c.fillStyle=p.col;c.fillRect(p.x,p.y,3,3)});c.globalAlpha=1;
+    // texts
+    c.font='900 '+Math.max(14,H*.03)+'px Orbitron, monospace';c.textAlign='center';texts.forEach(function(t){c.globalAlpha=Math.max(0,t.a);c.fillStyle=t.col;c.shadowColor=t.col;c.shadowBlur=12;c.fillText(t.s,t.x,t.y)});c.globalAlpha=1;c.shadowBlur=0;
+    if(flash>0){c.fillStyle='rgba(255,255,255,'+flash*.85+')';c.fillRect(-20,-20,W+40,H+40)}
+    c.restore();
+  }
+  var running=true;
+  new IntersectionObserver(function(e){running=e[0].isIntersecting}).observe(cv);
+  function loop(ts){requestAnimationFrame(loop);if(!running)return;var dt=Math.min(.05,(ts-last)/1000||.016);last=ts;if(reduce)dt=0;step(dt);draw()}
+  if(reduce){step(.01);draw()}else requestAnimationFrame(loop);
+})();
+
+/* ---------- WEAPON SURGE playground ---------- */
+(function(){
+  var cv=$('surge'),c=cv.getContext('2d');if(!c)return;
+  var n=1,time=0,last=0,W,H,bolts=[],tg=[],fx=[],fire=0,caps={1:'One stream: the classic shot.',2:'Twin guns: +25% damage, two targets at once.',3:'Three streams: +50% damage.',4:'Four streams: +75% damage.',5:'Five streams: +100% damage. Every hazard has its own gun on it.'};
+  function resize(){fit(cv);W=cv.width;H=cv.height;mk()}
+  function mk(){tg=[];for(var i=0;i<6;i++)tg.push({x:W*(.55+i*.07),y:H*(.14+((i*37)%70)/100*1),hp:1,re:0,hz:i%2===0})}
+  resize();window.addEventListener('resize',resize);
+  document.querySelectorAll('#surgeCtl button').forEach(function(b){b.addEventListener('click',function(){
+    document.querySelectorAll('#surgeCtl button').forEach(function(x){x.classList.remove('on')});b.classList.add('on');n=+b.dataset.s;$('surgeCap').textContent=caps[n]})});
+  function burst(x,y,col){for(var i=0;i<14;i++){var a=Math.random()*6.283,v=rnd(.2,1)*260*(H/500);fx.push({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:.6,col:col})}}
+  function step(dt){time+=dt;fire-=dt;var py=H*.5+Math.sin(time*1.4)*H*.22;
+    if(fire<=0){fire=.55;var alive=tg.filter(function(t){return t.hp>0}).sort(function(a,b){return a.x-b.x});
+      for(var i=0;i<n;i++){var t=alive[i];var ty=t?t.y:py+(i-(n-1)/2)*H*.06;bolts.push({x:W*.2+30,y:py,ty:ty,g:i,t:t})}}
+    bolts.forEach(function(b){b.x+=W*1.3*dt;b.y+=(b.ty-b.y)*Math.min(1,dt*10);
+      if(b.t&&b.t.hp>0&&b.x>=b.t.x-10){b.t.hp=0;b.t.re=1.2;burst(b.t.x,b.t.y,b.t.hz?'#ff2d78':'#00f5ff');b.dead=true}});
+    bolts=bolts.filter(function(b){return !b.dead&&b.x<W+50});
+    tg.forEach(function(t){t.x-=W*.05*dt;if(t.hp<=0){t.re-=dt;if(t.re<=0){t.hp=1;t.x=W*(1.02+Math.random()*.1);t.y=H*rnd(.12,.88)}}if(t.x<-30){t.x=W*(1.02+Math.random()*.1);t.y=H*rnd(.12,.88);t.hp=1}});
+    fx.forEach(function(p){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=300*dt;p.l-=dt});fx=fx.filter(function(p){return p.l>0});
+  }
+  function draw(){var py=H*.5+Math.sin(time*1.4)*H*.22;
+    var g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,'#05031a');g.addColorStop(1,'#1a0b36');c.fillStyle=g;c.fillRect(0,0,W,H);
+    c.strokeStyle='rgba(0,245,255,.12)';c.lineWidth=1;for(var x=-(time*60%50);x<W;x+=50){c.beginPath();c.moveTo(x,0);c.lineTo(x,H);c.stroke()}for(var y=0;y<H;y+=50){c.beginPath();c.moveTo(0,y);c.lineTo(W,y);c.stroke()}
+    tg.forEach(function(t){if(t.hp<=0)return;c.save();c.translate(t.x,t.y);var col=t.hz?'#ff2d78':'#00f5ff';c.shadowColor=col;c.shadowBlur=16;c.strokeStyle=col;c.lineWidth=3;c.fillStyle=t.hz?'rgba(255,45,120,.25)':'rgba(0,245,255,.2)';
+      if(t.hz){c.beginPath();for(var k=0;k<6;k++){var a=k*1.0472+time;c.lineTo(Math.cos(a)*H*.045,Math.sin(a)*H*.045)}c.closePath();c.fill();c.stroke()}else{var s=H*.05;c.fillRect(-s*.6,-s,s*1.2,s*2);c.strokeRect(-s*.6,-s,s*1.2,s*2)}
+      // lock-on reticle for targeted ones
+      c.restore()});
+    // lock lines
+    var alive=tg.filter(function(t){return t.hp>0}).sort(function(a,b){return a.x-b.x});
+    for(var i=0;i<Math.min(n,alive.length);i++){if(n>1){c.strokeStyle='rgba(255,194,26,.35)';c.setLineDash([6,6]);c.beginPath();c.moveTo(W*.2+30,py);c.lineTo(alive[i].x,alive[i].y);c.stroke();c.setLineDash([]);
+      c.strokeStyle='#ffc21a';c.lineWidth=2;c.beginPath();c.arc(alive[i].x,alive[i].y,H*.07,0,6.283);c.stroke()}}
+    drawPilot(c,W*.2,py,H*.26,time);
+    for(var k=1;k<n;k++){var oy=Math.ceil(k/2)*(k%2?-1:1)*H*.035;c.save();c.shadowColor='#ffc21a';c.shadowBlur=14;c.fillStyle='#ffc21a';c.fillRect(W*.2+H*.1,py+oy-2,H*.05,4);c.restore()}
+    bolts.forEach(function(b){var im=b.g===0?A.bolt:A.boltg;if(im&&im.ok)c.drawImage(im,b.x-60,b.y-10,90,20);else{c.save();c.shadowColor='#ffc21a';c.shadowBlur=12;c.strokeStyle='#fff';c.lineWidth=3;c.beginPath();c.moveTo(b.x-40,b.y);c.lineTo(b.x,b.y);c.stroke();c.restore()}});
+    fx.forEach(function(p){c.globalAlpha=Math.max(0,p.l/.6);c.fillStyle=p.col;c.fillRect(p.x,p.y,3,3)});c.globalAlpha=1;
+    c.fillStyle='#ffc21a';c.font='900 '+Math.round(H*.035)+'px Orbitron, monospace';c.textAlign='right';c.fillText('+'+(n-1)*25+'% DAMAGE · '+n+' STREAM'+(n>1?'S':''),W-16,H*.07);
+  }
+  var run=true;new IntersectionObserver(function(e){run=e[0].isIntersecting}).observe(cv);
+  function loop(ts){requestAnimationFrame(loop);if(!run)return;var dt=Math.min(.05,(ts-last)/1000||.016);last=ts;if(!reduce)step(dt);draw()}
+  requestAnimationFrame(loop);
+})();
+
+/* ---------- FINALE BOSS burst (real boss pictures) ---------- */
+(function(){
+  var cv=$('boss'),c=cv.getContext('2d');if(!c)return;
+  var W,H,time=0,last=0,state=0,st=0,hp=100,sparks=[],shots=[],flash=0,rings=[],bi=-1,shat=new Shatter();
+  function resize(){fit(cv);W=cv.width;H=cv.height}resize();window.addEventListener('resize',resize);
+  var rew=document.querySelectorAll('#rew div'),btn=$('bossGo');
+  function pick(){bi=(bi+1)%BOSSES.length}pick();
+  function reset(){state=0;st=0;hp=100;sparks=[];shots=[];rings=[];flash=0;shat=new Shatter();pick();rew.forEach(function(r){r.classList.remove('on')});btn.disabled=false;btn.textContent='🔥 FIRE AT THE BOSS'}
+  btn.addEventListener('click',function(){if(state===0){state=1;st=0;btn.disabled=true;btn.textContent='FIRING…'}else if(state===9)reset()});
+  function boom(){state=2;st=0;flash=1;var cx=W*.62,cy=H*.5;
+    shat.start(A.boss[bi],cx,cy,H*.74,H/500);
+    for(var i=0;i<150;i++){var a=Math.random()*6.283,v=rnd(.1,1)*520*(H/500);sparks.push({x:cx,y:cy,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:rnd(1,2.4),m:2.4,col:['#ffc21a','#fff',BOSSES[bi].c,'#ff2d78'][i%4]})}
+    for(var k=0;k<3;k++)rings.push({d:k*.25,r:0})}
+  function step(dt){time+=dt;st+=dt;var cx=W*.62,cy=H*.5;
+    if(state===1){ if(Math.random()<dt*14)shots.push({x:W*.18,y:cy+rnd(-H*.14,H*.14)});hp=Math.max(0,100-st*45);if(hp<=0)boom()}
+    shots.forEach(function(s){s.x+=W*1.6*dt});shots=shots.filter(function(s){return s.x<cx-H*.14});
+    var tf=(state===2&&st<2.5)?.4:1,d2=dt*tf;
+    shat.update(dt,tf);
+    sparks.forEach(function(p){p.x+=p.vx*d2;p.y+=p.vy*d2;p.vy+=160*d2;p.l-=d2});sparks=sparks.filter(function(p){return p.l>0});
+    rings.forEach(function(r){r.d-=dt;if(r.d<=0)r.r+=dt});
+    flash=Math.max(0,flash-dt*2.2);
+    if(state===2){rew.forEach(function(r,i){if(st>1.4+i*.45)r.classList.add('on')});if(st>6){state=9;btn.disabled=false;btn.textContent='↺ AGAIN'}}
+  }
+  function draw(){var cx=W*.62,cy=H*.5,bim=A.boss[bi],col=BOSSES[bi].c;
+    var g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,'#05031a');g.addColorStop(1,'#220a3a');c.fillStyle=g;c.fillRect(0,0,W,H);
+    c.strokeStyle='rgba(255,45,120,.12)';for(var y=H*.7;y<H;y+=24){c.beginPath();c.moveTo(0,y);c.lineTo(W,y);c.stroke()}
+    drawPilot(c,W*.14,cy,H*.28,time);
+    shots.forEach(function(sh){c.save();c.shadowColor='#00f5ff';c.shadowBlur=14;c.strokeStyle='#fff';c.lineWidth=3;c.beginPath();c.moveTo(sh.x-70,sh.y);c.lineTo(sh.x,sh.y);c.stroke();c.restore()});
+    if(state<=1){var hot=state===1?1-hp/100:0,shake=hot*7*(H/500),dh=H*.74;
+      c.save();c.translate(cx+rnd(-1,1)*shake,cy+rnd(-1,1)*shake+Math.sin(time*2)*4);c.shadowColor=col;c.shadowBlur=40+hot*40;
+      if(bim&&bim.ok){var dw=dh*bim.width/bim.height;c.filter='brightness('+(1+hot*1.8)+')';c.drawImage(bim,-dw/2,-dh/2,dw,dh);c.filter='none'}
+      else{c.fillStyle='#1a0a2e';c.strokeStyle='#ff2d78';c.lineWidth=5;var s=H*.0034;c.beginPath();c.moveTo(-110*s,0);c.lineTo(-50*s,-90*s);c.lineTo(60*s,-70*s);c.lineTo(120*s,-20*s);c.lineTo(120*s,20*s);c.lineTo(60*s,70*s);c.lineTo(-50*s,90*s);c.closePath();c.fill();c.stroke()}
+      if(state===1){c.strokeStyle='rgba(255,255,255,'+hot+')';c.lineWidth=2;for(var i=0;i<4+hot*10;i++){var a=Math.random()*6.283,l=rnd(40,150)*(H/500);c.beginPath();c.moveTo(0,0);c.lineTo(Math.cos(a)*l,Math.sin(a)*l);c.stroke()}}
+      c.restore();
+      c.fillStyle='rgba(0,0,0,.6)';c.fillRect(W*.55,14,W*.4,10);c.fillStyle=col;c.fillRect(W*.55,14,W*.4*hp/100,10);
+      c.fillStyle='#fff';c.font='700 '+Math.round(H*.03)+'px Orbitron, monospace';c.textAlign='right';c.fillText(BOSSES[bi].n,W*.95,H*.085)}
+    rings.forEach(function(r){if(r.d>0||r.r>1.8)return;var p=r.r/1.8;c.strokeStyle='rgba(255,194,26,'+(1-p)+')';c.lineWidth=8*(1-p)+2;c.beginPath();c.arc(cx,cy,p*W*.8,0,6.283);c.stroke()});
+    shat.draw(c);
+    sparks.forEach(function(p){c.globalAlpha=Math.max(0,p.l/p.m);c.fillStyle=p.col;c.fillRect(p.x,p.y,3,3)});c.globalAlpha=1;
+    if(state>=2){var tin=Math.min(1,Math.max(0,(st-.9)/.5));c.globalAlpha=tin;c.fillStyle='#ffc21a';c.shadowColor='#ffc21a';c.shadowBlur=22;c.font='900 '+Math.round(H*.065)+'px Orbitron, monospace';c.textAlign='center';c.fillText('★ FINALE BOSS DOWN ★',W/2,H*.16);c.globalAlpha=1;c.shadowBlur=0}
+    if(flash>0){c.fillStyle='rgba(255,255,255,'+flash+')';c.fillRect(0,0,W,H)}
+  }
+  var run=true;new IntersectionObserver(function(e){run=e[0].isIntersecting}).observe(cv);
+  function loop(ts){requestAnimationFrame(loop);if(!run)return;var dt=Math.min(.05,(ts-last)/1000||.016);last=ts;if(!reduce)step(dt);draw()}
+  requestAnimationFrame(loop);
+})();
+})();
+</script>
+</body>
+</html>
